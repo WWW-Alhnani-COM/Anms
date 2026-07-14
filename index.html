@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>فيديو خلفية تفاعلي مع GSAP ScrollTrigger</title>
-    <!-- GSAP & ScrollTrigger -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <title>فيديو خلفية تفاعلي - Scrolly Video</title>
+    <!-- مكتبة scrolly-video -->
+    <script src="https://cdn.jsdelivr.net/npm/scrolly-video@latest/dist/scrolly-video.js"></script>
     <style>
         /* إعادة تعيين */
         * {
@@ -23,32 +22,36 @@
             overflow-x: hidden;
         }
 
-        /* ----- فيديو الخلفية ----- */
-        #bg-video {
+        /* ----- فيديو الخلفية (ثابت) ----- */
+        #bg-video-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            object-fit: cover;
             z-index: 0;
-            pointer-events: none; /* يمنع التفاعل المباشر */
+            overflow: hidden;
             background: #0a0f15;
-            filter: brightness(0.85) saturate(1.1);
-            will-change: transform;
         }
 
-        /* طبقة تراكب داكنة لتحسين قراءة النص */
+        #bg-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8) saturate(1.1);
+        }
+
+        /* طبقة تراكب داكنة */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1;
             pointer-events: none;
-            backdrop-filter: blur(1px);
+            backdrop-filter: blur(1.5px);
         }
 
         /* ---- المحتوى فوق الفيديو ---- */
@@ -100,7 +103,6 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* تلميحات التمرير */
         .scroll-hint {
             margin-top: 2.5rem;
             font-size: 1rem;
@@ -111,7 +113,6 @@
             border-radius: 60px;
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
         }
 
         .scroll-hint i {
@@ -124,7 +125,6 @@
             50% { transform: translateY(10px); }
         }
 
-        /* تذييل */
         .footer {
             height: 30vh;
             display: flex;
@@ -138,7 +138,6 @@
             width: 100%;
         }
 
-        /* تكيف مع الشاشات الصغيرة */
         @media (max-width: 700px) {
             .section p {
                 font-size: 1rem;
@@ -153,149 +152,87 @@
 </head>
 <body>
 
-    <!-- فيديو الخلفية (ثابت) -->
-    <video id="bg-video" muted playsinline preload="metadata" autoplay loop>
-        <!-- استخدم فيديو قصير وجذاب من Pixabay (نموذجي) -->
-        <source src="your-video.mp4" type="video/mp4" />
-        متصفحك لا يدعم فيديو الخلفية.
-    </video>
+    <!-- حاوية فيديو الخلفية -->
+    <div id="bg-video-container">
+        <video id="bg-video" muted playsinline preload="auto">
+            <source src="your-video.mp4" type="video/mp4" />
+            متصفحك لا يدعم فيديو الخلفية.
+        </video>
+    </div>
 
-    <!-- طبقة تراكب شفافة -->
+    <!-- طبقة تراكب -->
     <div class="overlay"></div>
 
-    <!-- المحتوى الرئيسي -->
+    <!-- المحتوى -->
     <div class="content">
 
-        <!-- القسم 1 -->
         <section class="section">
             <h2>🎬 فيديو خلفية تفاعلي</h2>
-            <p>تمرير للأسفل للتحكم بتقدم الفيديو — خلفية ثابتة مع تأثير GSAP ScrollTrigger</p>
+            <p>تمرير للأسفل للتحكم بتقدم الفيديو — باستخدام مكتبة Scrolly Video</p>
             <div class="scroll-hint">⬇️ مرر للأسفل ⬇️</div>
         </section>
 
-        <!-- القسم 2 (مساحة تمرير إضافية) -->
         <section class="section">
             <h2>✨ تحكم سلس</h2>
             <p>يتقدم الفيديو مع التمرير ويتوقف عند التوقف — تجربة غامرة</p>
             <div class="scroll-hint" style="margin-top: 2rem;">⬇️ استمر بالتمرير ⬇️</div>
         </section>
 
-        <!-- القسم 3 -->
         <section class="section">
             <h2>🌌 مشهد ديناميكي</h2>
             <p>الفيديو يعمل كخلفية ثابتة، ووقت تشغيله مرتبط بحركة التمرير</p>
         </section>
 
-        <!-- القسم 4 -->
         <section class="section">
             <h2>🚀 إمكانيات لا نهائية</h2>
             <p>يمكنك تغيير الفيديو أو تعديل سرعة التفاعل بسهولة</p>
         </section>
 
-        <!-- تذييل -->
         <div class="footer">
-            <span>🔄 تمرير متزامن مع الفيديو — GSAP + ScrollTrigger</span>
+            <span>🔄 تمرير متزامن مع الفيديو — Scrolly Video</span>
         </div>
 
     </div>
 
     <script>
-        // تسجيل ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
-
-        // عنصر الفيديو الخلفية
-        const bgVideo = document.getElementById('bg-video');
-
-        // متغير للتحكم بمنع تنفيذ الربط أكثر من مرة
-        let isInitialized = false;
-
-        // وظيفة ربط التمرير بالفيديو
-        function initVideoScroll() {
-            if (isInitialized) return;
-            if (!bgVideo.duration || isNaN(bgVideo.duration)) {
-                // إذا لم تكن المدة جاهزة، ننتظر
-                bgVideo.addEventListener('loadedmetadata', initVideoScroll);
+        // انتظار تحميل الصفحة بالكامل
+        document.addEventListener('DOMContentLoaded', function() {
+            // الحصول على عنصر الفيديو
+            const video = document.getElementById('bg-video');
+            
+            // التأكد من وجود الفيديو
+            if (!video) {
+                console.error('عنصر الفيديو غير موجود');
                 return;
             }
 
-            const duration = bgVideo.duration;
-
-            // إنشاء ScrollTrigger يتحكم بتقدم الفيديو
-            ScrollTrigger.create({
-                trigger: "body", // نستخدم body كـ trigger ليشمل الصفحة كلها
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 1.5, // سلاسة عالية
-                onUpdate: (self) => {
-                    // نسبة التقدم من 0 إلى 1
-                    const progress = Math.min(Math.max(self.progress, 0), 1);
-                    // تعيين وقت الفيديو بناءً على النسبة
-                    bgVideo.currentTime = progress * duration;
-                },
-                onEnter: () => {
-                    bgVideo.play().catch(() => {});
-                },
-                onLeave: () => {
-                    // لا نوقف الفيديو بل نتركه مستمراً لكن التحديث يتوقف عند الخروج
-                    // لكن نضعه في حالة تشغيل لضمان استمرارية الصورة
-                    if (bgVideo.paused) bgVideo.play().catch(() => {});
-                },
-                onEnterBack: () => {
-                    bgVideo.play().catch(() => {});
-                },
-                onLeaveBack: () => {
-                    // عند العودة للأعلى نستمر بتشغيل الفيديو
-                    if (bgVideo.paused) bgVideo.play().catch(() => {});
-                }
+            // تهيئة Scrolly Video
+            const scrollyVideo = new ScrollyVideo({
+                scrollyVideoContainer: "bg-video-container", // الحاوية التي تحتوي الفيديو
+                videoElement: video, // عنصر الفيديو نفسه
+                src: "your-video.mp4", // مصدر الفيديو (نفس المصدر الموجود في HTML)
+                // خيارات إضافية
+                scrollContainer: window, // نافذة المتصفح كحاوية تمرير
+                useWebCodecs: false, // تعطيل WebCodecs للتأكد من التوافق (يمكن تفعيله)
+                smoothScroll: true, // تمرير سلس
+                scrollThreshold: 0.1, // حساسية التمرير
+                // معايرة: يمكن ضبط سرعة التقدم
+                // playbackRate: 1, // سرعة التشغيل
+                // startAt: 0, // نقطة البداية
+                // endAt: 1, // نقطة النهاية
             });
 
-            // تشغيل الفيديو بشكل مبدئي
-            bgVideo.play().catch(() => {});
+            // بدء تشغيل الفيديو (المكتبة ستتعامل مع التقدم)
+            video.play().catch(() => {
+                console.warn('لا يمكن تشغيل الفيديو تلقائياً');
+            });
 
-            isInitialized = true;
-            console.log('✅ فيديو الخلفية مرتبط بالتمرير بنجاح');
-        }
-
-        // محاولة الربط عند تحميل البيانات
-        if (bgVideo.readyState >= 2 && bgVideo.duration) {
-            initVideoScroll();
-        } else {
-            bgVideo.addEventListener('loadedmetadata', initVideoScroll);
-        }
-
-        // احتياطي: إذا لم يتم الربط خلال 3 ثوانٍ، نحاول مجدداً
-        setTimeout(() => {
-            if (!isInitialized) {
-                initVideoScroll();
-            }
-        }, 3000);
-
-        // إضافة تأثير بسيط: تغيير سطوع الفيديو مع التمرير (تأثير إضافي)
-        gsap.to(bgVideo, {
-            filter: "brightness(0.75) saturate(1.2)",
-            ease: "none",
-            scrollTrigger: {
-                trigger: "body",
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 2,
-            }
+            console.log('✅ تم تهيئة Scrolly Video بنجاح');
+            
+            // يمكنك الوصول إلى دوال إضافية مثل:
+            // scrollyVideo.destroy() لإلغاء التهيئة
+            // scrollyVideo.update({ src: "video2.mp4" }) لتغيير الفيديو
         });
-
-        // تغيير شفافية التراكب مع التمرير (تأثير جمالي)
-        const overlay = document.querySelector('.overlay');
-        gsap.to(overlay, {
-            opacity: 0.6,
-            ease: "none",
-            scrollTrigger: {
-                trigger: "body",
-                start: "top center",
-                end: "bottom center",
-                scrub: 1.5,
-            }
-        });
-
-        console.log('🎥 تم إعداد فيديو الخلفية التفاعلي مع GSAP ScrollTrigger');
     </script>
 </body>
 </html>
