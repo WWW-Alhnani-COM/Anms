@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>فيديو تفاعلي مع GSAP ScrollTrigger</title>
+    <title>فيديو خلفية تفاعلي مع GSAP ScrollTrigger</title>
     <!-- GSAP & ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <style>
-        /* إعادة تعيين بسيطة */
+        /* إعادة تعيين */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            direction: rtl; /* للنص العربي */
+            direction: rtl;
         }
 
         body {
@@ -23,273 +23,279 @@
             overflow-x: hidden;
         }
 
+        /* ----- فيديو الخلفية ----- */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 0;
+            pointer-events: none; /* يمنع التفاعل المباشر */
+            background: #0a0f15;
+            filter: brightness(0.85) saturate(1.1);
+            will-change: transform;
+        }
+
+        /* طبقة تراكب داكنة لتحسين قراءة النص */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1;
+            pointer-events: none;
+            backdrop-filter: blur(1px);
+        }
+
+        /* ---- المحتوى فوق الفيديو ---- */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         /* أقسام المحتوى */
         .section {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            background: transparent;
+            backdrop-filter: blur(2px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .section h2 {
-            font-size: clamp(2rem, 6vw, 4rem);
+            font-size: clamp(2.4rem, 7vw, 4.6rem);
             font-weight: 700;
             letter-spacing: 2px;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-            margin-bottom: 1rem;
+            text-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #ffffff 0%, #c0d0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .section p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             max-width: 700px;
-            line-height: 1.7;
-            opacity: 0.8;
-            backdrop-filter: blur(2px);
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem 2rem;
-            border-radius: 40px;
+            line-height: 1.8;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.8rem 2.2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* حاوية الفيديو */
-        .video-wrapper {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            border-radius: 28px;
-            overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
-            transform: scale(0.92);
-            transition: transform 0.2s ease;
-            background: #000;
-        }
-
-        .video-wrapper video {
-            display: block;
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            background: #111;
-            pointer-events: none; /* منع التفاعل المباشر بالفيديو */
-        }
-
-        /* قسم الفيديو المخصص (سيظهر في المنتصف) */
-        #video-section {
-            min-height: 200vh; /* مساحة كافية للتمرير */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            padding-top: 10vh;
-            background: linear-gradient(145deg, #12181f, #1a222c);
-            position: relative;
-        }
-
-        #video-section .video-wrapper {
-            position: sticky;
-            top: 10vh;
-            transform: scale(0.9);
-            will-change: transform, opacity;
-            margin-bottom: 30vh;
-        }
-
-        /* تلميحات تمرير */
+        /* تلميحات التمرير */
         .scroll-hint {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             font-size: 1rem;
             letter-spacing: 2px;
-            color: #8a9bb5;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 0.5rem 1.8rem;
+            color: #b8cae0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.6rem 2rem;
             border-radius: 60px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
         }
 
         .scroll-hint i {
             display: inline-block;
-            animation: bounce-down 1.8s infinite;
+            animation: bounce-down 2s infinite;
         }
 
         @keyframes bounce-down {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(8px); }
-        }
-
-        /* تنسيق إضافي للأقسام العلوية والسفلية */
-        .section-accent {
-            background: #0f141c;
-        }
-
-        .section-light {
-            background: #19212b;
+            50% { transform: translateY(10px); }
         }
 
         /* تذييل */
         .footer {
-            height: 40vh;
-            background: #0b0e14;
+            height: 30vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.2rem;
-            color: #6a7b94;
-            border-top: 1px solid #1e2733;
+            color: #a0b4d0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
         }
 
-        /* responsive */
+        /* تكيف مع الشاشات الصغيرة */
         @media (max-width: 700px) {
-            .video-wrapper {
-                max-width: 95%;
-                border-radius: 16px;
+            .section p {
+                font-size: 1rem;
+                padding: 0.6rem 1.2rem;
             }
-            #video-section .video-wrapper {
-                top: 6vh;
+            .scroll-hint {
+                font-size: 0.9rem;
+                padding: 0.4rem 1.4rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- القسم 1: مقدمة -->
-    <section class="section section-accent">
-        <h2>🎬 فيديو تفاعلي</h2>
-        <p>تمرير للأسفل للتحكم بتشغيل الفيديو مع GSAP ScrollTrigger</p>
-        <div class="scroll-hint">⬇️ مرر للأسفل ⬇️</div>
-    </section>
+    <!-- فيديو الخلفية (ثابت) -->
+    <video id="bg-video" muted playsinline preload="metadata" autoplay loop>
+        <!-- استخدم فيديو قصير وجذاب من Pixabay (نموذجي) -->
+        <source src="your-video.mp4" type="video/mp4" />
+        متصفحك لا يدعم فيديو الخلفية.
+    </video>
 
-    <!-- قسم الفيديو (التمرير يتحكم به) -->
-    <section id="video-section">
-        <div class="video-wrapper" id="videoWrapper">
-            <video id="interactiveVideo" muted playsinline preload="metadata">
-                <!-- مصدر فيديو نموذجي (فيديو قصير من Pixabay) -->
-                <source src="your-video.mp4" type="video/mp4" />
-                متصفحك لا يدعم تشغيل الفيديو.
-            </video>
+    <!-- طبقة تراكب شفافة -->
+    <div class="overlay"></div>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="content">
+
+        <!-- القسم 1 -->
+        <section class="section">
+            <h2>🎬 فيديو خلفية تفاعلي</h2>
+            <p>تمرير للأسفل للتحكم بتقدم الفيديو — خلفية ثابتة مع تأثير GSAP ScrollTrigger</p>
+            <div class="scroll-hint">⬇️ مرر للأسفل ⬇️</div>
+        </section>
+
+        <!-- القسم 2 (مساحة تمرير إضافية) -->
+        <section class="section">
+            <h2>✨ تحكم سلس</h2>
+            <p>يتقدم الفيديو مع التمرير ويتوقف عند التوقف — تجربة غامرة</p>
+            <div class="scroll-hint" style="margin-top: 2rem;">⬇️ استمر بالتمرير ⬇️</div>
+        </section>
+
+        <!-- القسم 3 -->
+        <section class="section">
+            <h2>🌌 مشهد ديناميكي</h2>
+            <p>الفيديو يعمل كخلفية ثابتة، ووقت تشغيله مرتبط بحركة التمرير</p>
+        </section>
+
+        <!-- القسم 4 -->
+        <section class="section">
+            <h2>🚀 إمكانيات لا نهائية</h2>
+            <p>يمكنك تغيير الفيديو أو تعديل سرعة التفاعل بسهولة</p>
+        </section>
+
+        <!-- تذييل -->
+        <div class="footer">
+            <span>🔄 تمرير متزامن مع الفيديو — GSAP + ScrollTrigger</span>
         </div>
-        <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.5; max-width: 500px; background: transparent; backdrop-filter: none;">
-            ⏳ تقدم الفيديو مرتبط بالتمرير — كلما تمرير للأسفل، يتقدم الفيديو.
-        </p>
-        <div class="scroll-hint" style="margin-top: 1.5rem;">⬇️ استمر بالتمرير ⬇️</div>
-    </section>
 
-    <!-- القسم 2: محتوى إضافي -->
-    <section class="section section-light">
-        <h2>✨ تجربة سلسة</h2>
-        <p>تم ربط مدة الفيديو مع نسبة التمرير باستخدام ScrollTrigger. الفيديو يتوقف إذا توقف التمرير.</p>
-    </section>
-
-    <!-- القسم 3: خاتمة -->
-    <section class="section section-accent">
-        <h2>🚀 استكشف أكثر</h2>
-        <p>يمكنك استبدال الرابط بفيديو آخر أو تعديل سرعة التقدم.</p>
-    </section>
-
-    <!-- تذييل -->
-    <div class="footer">
-        <span>🔄 تمرير متزامن مع الفيديو — GSAP + ScrollTrigger</span>
     </div>
 
     <script>
         // تسجيل ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
-        // عناصر الفيديو
-        const video = document.getElementById('interactiveVideo');
-        const wrapper = document.getElementById('videoWrapper');
+        // عنصر الفيديو الخلفية
+        const bgVideo = document.getElementById('bg-video');
 
-        // التأكد من تحميل البيانات الوصفية للفيديو لمعرفة المدة
-        video.addEventListener('loadedmetadata', function() {
-            initScrollTrigger();
-        });
+        // متغير للتحكم بمنع تنفيذ الربط أكثر من مرة
+        let isInitialized = false;
 
-        // إذا كان الفيديو قد حمّل البيانات مسبقاً
-        if (video.readyState >= 2) {
-            initScrollTrigger();
-        } else {
-            video.addEventListener('loadedmetadata', initScrollTrigger);
-        }
+        // وظيفة ربط التمرير بالفيديو
+        function initVideoScroll() {
+            if (isInitialized) return;
+            if (!bgVideo.duration || isNaN(bgVideo.duration)) {
+                // إذا لم تكن المدة جاهزة، ننتظر
+                bgVideo.addEventListener('loadedmetadata', initVideoScroll);
+                return;
+            }
 
-        function initScrollTrigger() {
-            const duration = video.duration;
+            const duration = bgVideo.duration;
 
-            // إنشاء ScrollTrigger للفيديو
+            // إنشاء ScrollTrigger يتحكم بتقدم الفيديو
             ScrollTrigger.create({
-                trigger: "#video-section",
-                start: "top top",        // يبدأ عند دخول القسم لأعلى الشاشة
-                end: "bottom bottom",    // ينتهي عند خروج القسم من أسفل الشاشة
-                scrub: 1.2,              // تأثير سلس مع التمرير (ثواني)
+                trigger: "body", // نستخدم body كـ trigger ليشمل الصفحة كلها
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5, // سلاسة عالية
                 onUpdate: (self) => {
                     // نسبة التقدم من 0 إلى 1
-                    const progress = self.progress;
+                    const progress = Math.min(Math.max(self.progress, 0), 1);
                     // تعيين وقت الفيديو بناءً على النسبة
-                    video.currentTime = progress * duration;
+                    bgVideo.currentTime = progress * duration;
                 },
                 onEnter: () => {
-                    // تشغيل الفيديو عند الدخول (لضمان التحديث)
-                    video.play().catch(() => {});
+                    bgVideo.play().catch(() => {});
                 },
                 onLeave: () => {
-                    // إيقاف الفيديو عند الخروج لتوفير الموارد
-                    video.pause();
+                    // لا نوقف الفيديو بل نتركه مستمراً لكن التحديث يتوقف عند الخروج
+                    // لكن نضعه في حالة تشغيل لضمان استمرارية الصورة
+                    if (bgVideo.paused) bgVideo.play().catch(() => {});
                 },
                 onEnterBack: () => {
-                    // عند التمرير للأعلى مرة أخرى
-                    video.play().catch(() => {});
+                    bgVideo.play().catch(() => {});
                 },
                 onLeaveBack: () => {
-                    video.pause();
+                    // عند العودة للأعلى نستمر بتشغيل الفيديو
+                    if (bgVideo.paused) bgVideo.play().catch(() => {});
                 }
             });
 
-            // تأثير إضافي: تغيير مقياس الحاوية مع التمرير (تأثير بصري)
-            gsap.to(wrapper, {
-                scale: 0.98,
-                opacity: 0.9,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: "#video-section",
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: 1.5,
-                }
-            });
+            // تشغيل الفيديو بشكل مبدئي
+            bgVideo.play().catch(() => {});
 
-            // تأثير توهج بسيط على الحاوية
-            gsap.to(wrapper, {
-                boxShadow: "0 40px 80px rgba(0, 20, 40, 0.9)",
-                ease: "none",
-                scrollTrigger: {
-                    trigger: "#video-section",
-                    start: "top center",
-                    end: "bottom center",
-                    scrub: 1,
-                }
-            });
-
-            // إذا كان الفيديو في حالة انتظار، نشغله عند أول تمريرة
-            document.addEventListener('scroll', function firstScroll() {
-                if (video.paused && video.currentTime === 0) {
-                    video.play().catch(() => {});
-                }
-                // إزالة المستمع بعد أول تمريرة
-                document.removeEventListener('scroll', firstScroll);
-            }, { once: true });
+            isInitialized = true;
+            console.log('✅ فيديو الخلفية مرتبط بالتمرير بنجاح');
         }
 
-        // احتياطي: في حال لم يتم تحميل الفيديو بشكل صحيح، نعيد محاولة الربط
-        setTimeout(() => {
-            if (video.duration && !video._scrollTriggerInited) {
-                initScrollTrigger();
-                video._scrollTriggerInited = true;
-            }
-        }, 2000);
+        // محاولة الربط عند تحميل البيانات
+        if (bgVideo.readyState >= 2 && bgVideo.duration) {
+            initVideoScroll();
+        } else {
+            bgVideo.addEventListener('loadedmetadata', initVideoScroll);
+        }
 
-        // إضافة مؤشر تحميل بسيط (اختياري)
-        console.log('✅ GSAP ScrollTrigger Video Ready');
+        // احتياطي: إذا لم يتم الربط خلال 3 ثوانٍ، نحاول مجدداً
+        setTimeout(() => {
+            if (!isInitialized) {
+                initVideoScroll();
+            }
+        }, 3000);
+
+        // إضافة تأثير بسيط: تغيير سطوع الفيديو مع التمرير (تأثير إضافي)
+        gsap.to(bgVideo, {
+            filter: "brightness(0.75) saturate(1.2)",
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 2,
+            }
+        });
+
+        // تغيير شفافية التراكب مع التمرير (تأثير جمالي)
+        const overlay = document.querySelector('.overlay');
+        gsap.to(overlay, {
+            opacity: 0.6,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top center",
+                end: "bottom center",
+                scrub: 1.5,
+            }
+        });
+
+        console.log('🎥 تم إعداد فيديو الخلفية التفاعلي مع GSAP ScrollTrigger');
     </script>
 </body>
 </html>
